@@ -11,3 +11,9 @@ export interface TranslateBody {
 export interface TranslateResponse {
   code: string;
 }
+
+export type UserDetails = {
+  firstName: string,
+  lastName: string,
+  id: string
+}

@@ -6,8 +6,95 @@ import { TextBlock } from '@/components/TextBlock';
 import { OpenAIModel, TranslateBody } from '@/types/types';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
+import * as Form from '@radix-ui/react-form';
+import { Button, Input, Text } from '@geist-ui/core';
+import LoginStep from '@/components/LoginStep';
+import Header from '@/components/Header';
+import ProgrammingLangSelection from '@/components/ProgrammingLangSelection';
+import { UserDetails } from '@/types/types';
+
+type HeaderContent = {
+  title: string,
+  subtitle: string,
+  desc: string
+}
+
 
 export default function Home() {
+
+  const [step, setStep] = useState<number>(0);
+  const [headerContent, setHeaderContent] = useState<HeaderContent>(); 
+
+  const [userDetails, setUserDetails] = useState<UserDetails>();
+  const [language, setProgrammingLanguage] = useState<string>();
+
+  const _nextStep = () => {
+    setHeaderContent(getHeaderContent(step + 1))
+    setStep(step + 1)
+  }
+  const handleSumbitLogin = (info: UserDetails) => {
+    setUserDetails(info);
+    _nextStep()
+  }
+
+  const handleSumbitProgrammingLang = (language: string) => {
+    setProgrammingLanguage(language);
+    _nextStep()
+  }
+
+  const handleSumbitNote = () => {
+    _nextStep()
+  }
+
+  const getHeaderContent = (step: number) => {
+    switch (step) {
+      case 0:
+        return {
+          title: "Begin Your Journey",
+          subtitle: "Welcome to Shavitim’s assessment exercise. Let’s begin by filling out your personal details.",
+          desc: ""
+        }
+      case 1:
+        return {
+          title: "Begin Your Journey",
+          subtitle: "Great! Next, please select your favorite programming language.",
+          desc: "No worries, we are not going to test your level of expertise in this language. Rather, we will ask general programming questions by showing you code snippets written in your favorite language."
+        }
+      case 2:
+        return {
+          title: "Begin Your Journey",
+          subtitle: `Great ${userDetails?.firstName}! Next, we will show you a series of code snippets in ${language}, asking you to describe their printed output.`,
+          desc: "Note: This exercise has no time limit. Also, you may skip questions and come back to them later by using the two arrows at the bottom of the screen. Ready to begin?"
+        }      
+      default:
+        break;
+    }
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Shavitim’s Assessment Exercise</title>
+        <meta
+          name="description"
+          content="Use AI to translate code from one language to another."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="container mx-auto pt-36 space-y-16 max-w-xl">
+        {headerContent && <Header title={headerContent?.title} subtitle={headerContent?.subtitle} desc={headerContent?.desc}></Header>}        
+      </div>  
+      <div className="container mx-auto pt-36 space-y-16 max-w-4xl">
+        {(step == 0) && <LoginStep onSubmit={(info:UserDetails) => handleSumbitLogin(info)}/>}
+        {(step == 1) && <ProgrammingLangSelection onSubmit={(language: string) => handleSumbitProgrammingLang(language)}/>}
+      </div>    
+    </>
+  );
+
+}
+
+function Home2() {
   const [inputLanguage, setInputLanguage] = useState<string>('JavaScript');
   const [outputLanguage, setOutputLanguage] = useState<string>('Python');
   const [inputCode, setInputCode] = useState<string>('');
